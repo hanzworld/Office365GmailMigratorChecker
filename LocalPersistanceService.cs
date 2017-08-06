@@ -9,18 +9,18 @@ namespace Office365GmailMigratorChecker
     class LocalPersistanceService
     {
 
-        public static void PersistResultsToFile(List<MyMessage> messages)
+        public static void PersistResultsToFile(List<MyMessage> messages, int year, int periods, PeriodType periodtype)
         {
-            using (StreamWriter file = System.IO.File.CreateText(@"Office365DataStore.json"))
+            using (StreamWriter file = File.CreateText(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype)))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, messages);
             }
         }
 
-        public static List<MyMessage> ReadResultsFromFile()
+        public static List<MyMessage> ReadResultsFromFile(int year, int periods, PeriodType periodtype)
         {
-            using (FileStream stream = new FileStream(@"Office365DataStore.json", FileMode.Open))
+            using (FileStream stream = new FileStream(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype), FileMode.Open))
             using (StreamReader file = new StreamReader(stream))
             {
                 JsonSerializer serializer = new JsonSerializer();
