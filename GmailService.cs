@@ -1,27 +1,33 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using OfficialGmailService = Google.Apis.Gmail.v1.GmailService;
 
 namespace Office365GmailMigratorChecker
 {
-    static class GmailService
+    class GmailService : OfficialGmailService
     {
-        
-        private static OfficialGmailService _instance = new OfficialGmailService(ConstructBaseInitializer());
-        public static OfficialGmailService Instance { get { return _instance; } }
-        
+        private Gmail _settings;
 
-        private static BaseClientService.Initializer ConstructBaseInitializer()
+        public GmailService(IOptions<Gmail> settings) : base(ConstructBaseInitializer()) {
+            //quick sanity check that we loaded something rather than breaking later!
+            if (settings.Value.Username == null)
+            {
+                throw new Exception("Failed to load configuration settings correctly");
+            }
+            _settings = settings.Value;
+        }
+               
+
+        private static Initializer ConstructBaseInitializer()
         {
-            Google.Apis.Auth.OAuth2.UserCredential credential;
-            string[] Scopes = { OfficialGmailService.Scope.GmailReadonly };
+            UserCredential credential;
+            string[] Scopes = { Scope.GmailReadonly };
 
             using (var stream = new FileStream(@"OutlookGmailComparer.Gmail.json", FileMode.Open, FileAccess.Read))
             {
@@ -38,7 +44,7 @@ namespace Office365GmailMigratorChecker
             }
 
 
-            return new BaseClientService.Initializer()
+            return new Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = "Email De-Duplicator"

@@ -43,7 +43,7 @@ namespace Office365GmailMigratorChecker
                 //now we want to find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
                 //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
 
-                var searchRequest = _gmailService.Instance.Users.Messages.List("[USERNAME]");
+                var searchRequest = _gmailService.Users.Messages.List("[USERNAME]");
                 searchRequest.IncludeSpamTrash = true;
                 searchRequest.MaxResults = 1;
 
