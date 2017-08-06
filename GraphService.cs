@@ -1,4 +1,5 @@
-﻿using Microsoft.Graph;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,32 @@ namespace Office365GmailMigratorChecker
 {
     class GraphService
     {
-        public static async Task<List<Message>> RetrieveData(int startYear, int period, string username)
+        Graph _settings;
+
+        public GraphService(IOptions<Graph> settings)
+        {
+            //quick sanity check that we loaded something rather than breaking later!
+            if (settings.Value.Username == null)
+            {
+                throw new Exception("Failed to load configuration settings correctly");
+            }
+
+            _settings = settings.Value;
+            
+        }
+
+        public async Task<List<Message>> RetrieveData(int startYear, int period)
         {
             //TODO Need to cache the results so I stop querying the API - or chuck them in a DB?
 
-            GraphServiceClient graphClient = new GraphServiceClient(new AzureAuthenticationProvider());
+            GraphServiceClient graphClient = new GraphServiceClient(new AzureAuthenticationProvider(_settings));
 
             DateTime startDate = new DateTime(startYear, 1, 1);
             DateTime endDate = startDate.AddMonths(period);
 
             //todo - iterate through every year
 
-            var emailrequest = graphClient.Users[username].Messages.Request();
+            var emailrequest = graphClient.Users[_settings.Username].Messages.Request();
 
             emailrequest.Filter(String.Format("sentDateTime ge {0} and sentDateTime lt {1}", startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd")));
             emailrequest.Select("internetMessageId, createdDateTime, receivedDateTime, sentDateTime, subject, hasAttachments, sender, from, toRecipients, ccRecipients, bccRecipients, isDraft");
@@ -46,27 +61,35 @@ namespace Office365GmailMigratorChecker
 
         class AzureAuthenticationProvider : IAuthenticationProvider
         {
+            Graph _settings;
+
+            public AzureAuthenticationProvider (Graph settings)
+            {
+                //quick sanity check that we loaded something rather than breaking later!
+                if (settings.Tenant == null)
+                {
+                    throw new Exception("Failed to load configuration settings correctly or settings missing");
+                }
+                _settings = settings;
+            }
 
             // Define other methods and classes here
             public async Task AuthenticateRequestAsync(HttpRequestMessage request)
-            {
+            {                
                 //  Constants
-                var tenant = "barrowside.onmicrosoft.com";
                 var resource = "https://graph.microsoft.com/";
 
-                var clientID = "[CLIENT_ID]";
-                var secret = "[CLIENT_SECRET]";
-
-                string[] _scopes = new string[] { "user.read, " };
+                string[] _scopes = new string[] { "user.read " };
 
                 //  Ceremony
-                var authority = $"https://login.microsoftonline.com/{tenant}";
+                var authority = $"https://login.microsoftonline.com/{_settings.Tenant}";
                 var authContext = new AuthenticationContext(authority);
-                var credentials = new ClientCredential(clientID, secret);
+                var credentials = new ClientCredential(_settings.ClientId, _settings.Secret);
                 var authResult = await authContext.AcquireTokenAsync(resource, credentials);
 
                 request.Headers.Add("Authorization", "Bearer " + authResult.AccessToken);
 
+            }
         }
     }
 }
