@@ -32,6 +32,7 @@ namespace Office365GmailMigratorChecker
         {
             try
             {
+                // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
                 var messages = new List<MyMessage>();
                 //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
                 if (LocalPersistanceService.LocalFileExists(_settings.StartYear, _settings.Periods, _settings.PeriodLength))
@@ -46,6 +47,7 @@ namespace Office365GmailMigratorChecker
                     LocalPersistanceService.PersistResultsToFile(messages, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                
+                //STEP 2: find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
                 //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
 
                 var searchRequest = _gmailService.Users.Messages.List("[USERNAME]");
