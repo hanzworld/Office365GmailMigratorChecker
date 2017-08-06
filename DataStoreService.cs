@@ -8,16 +8,29 @@ namespace Office365GmailMigratorChecker
 {
     class DataStoreService
     {
+        private KeyFactory keyFactory;
+        private DatastoreDb db;
 
-        public static DatastoreDb InstantiateDataStore()
+        public DataStoreService()
+        {
+            db = InstantiateDataStore();
+            keyFactory = db.CreateKeyFactory("Message");
+        }
+
+        private DatastoreDb InstantiateDataStore()
         {
             DatastoreDb db = DatastoreDb.Create("barrowside-mail-maintainer");
             return db;
         }
 
-        public static void WriteToDb(DatastoreDb db, KeyFactory keyFactory, MyMessage message)
+        public void WriteToDb(List<MyMessage> messages)
         {
-            var messageToAdd = new Google.Cloud.Datastore.V1.Entity()
+            messages.ForEach(x => CreateRecordEntry(x, keyFactory));
+        }
+
+        private void CreateRecordEntry(MyMessage message, KeyFactory keyFactory)
+        {
+            var messageToAdd = new Entity()
             {
                 Key = keyFactory.CreateKey(message.outlookMessage.InternetMessageId),
                 ["rfc822msgid"] = message.outlookMessage.InternetMessageId,

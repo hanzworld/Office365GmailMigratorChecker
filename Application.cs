@@ -12,10 +12,11 @@ namespace Office365GmailMigratorChecker
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService, IOptions<AppSettings> settings)
+        public Application(GmailService gmailService, GraphService graphService, DataStoreService dataStoreService, IOptions<AppSettings> settings)
         {
             _gmailService = gmailService;
             _graphService = graphService;
+            _dataStoreService = dataStoreService;
             _settings = settings.Value;
 
         }
@@ -25,6 +26,7 @@ namespace Office365GmailMigratorChecker
         private GmailService _gmailService;
         private GraphService _graphService;
         private AppSettings _settings;
+        private DataStoreService _dataStoreService;
 
         public async Task Run()
         {
@@ -44,12 +46,6 @@ namespace Office365GmailMigratorChecker
                     LocalPersistanceService.PersistResultsToFile(messages, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                
-
-                
-                // var db = InstantiateDataStore();
-                // var keyFactory = db.CreateKeyFactory("Message");
-
-                //now we want to find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
                 //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
 
                 var searchRequest = _gmailService.Users.Messages.List("[USERNAME]");
@@ -84,10 +80,15 @@ namespace Office365GmailMigratorChecker
                         }
                     }
 
-                    // WriteToDb(db, keyFactory, message);
+                    
                 }
 
                 Console.WriteLine(messages.Count(x => !x.isInGmail));
+                var missingMessages = messages.Where(m => !m.isInGmail).ToList();
+
+                // STEP 3: Where we have messages which are not migrated, we need to store those
+                _dataStoreService.WriteToDb(missingMessages);
+
                 //TODO: These are the ones we want to hold onto and persist somewhere that's queryable over and over
             }
             catch (Exception e)
