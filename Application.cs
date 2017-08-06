@@ -14,6 +14,12 @@ namespace Office365GmailMigratorChecker
 
         public Application(GmailService gmailService, GraphService graphService, DataStoreService dataStoreService, IOptions<AppSettings> settings)
         {
+            //quick sanity check that we loaded something rather than breaking later!
+            if (settings.Value.StartYear == 0)
+            {
+                throw new Exception("Failed to load configuration settings correctly");
+            }
+
             _gmailService = gmailService;
             _graphService = graphService;
             _dataStoreService = dataStoreService;
