@@ -85,12 +85,13 @@ namespace Office365GmailMigratorChecker
                     
                 }
 
-                Console.WriteLine(messages.Count(x => !x.isInGmail));
                 var missingMessages = messages.Where(m => !m.isInGmail).ToList();
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those
                 _dataStoreService.WriteToDb(missingMessages);
 
+
+                Console.WriteLine(missingMessages.Count);
                 //TODO: These are the ones we want to hold onto and persist somewhere that's queryable over and over
             }
             catch (Exception e)
