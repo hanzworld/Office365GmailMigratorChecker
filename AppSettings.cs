@@ -7,7 +7,7 @@ namespace Office365GmailMigratorChecker
     public class AppSettings
     {
             public int Periods { get; set; }
-            public string PeriodType { get; set; }
+            public PeriodType PeriodLength { get; set; }
             public int StartYear { get; set; }
     }
 
@@ -27,5 +27,11 @@ namespace Office365GmailMigratorChecker
         public string ClientId { get; set; }
         public string Secret { get; set; }
         public int BatchSize { get; set; } = 100;
+    }
+
+    public enum PeriodType
+    {
+        Year,
+        Month
     }
 }

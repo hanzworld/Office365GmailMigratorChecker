@@ -40,6 +40,7 @@ namespace Office365GmailMigratorChecker
             services.AddOptions();
             services.Configure<Gmail>(options => configuration.GetSection("Gmail").Bind(options));
             services.Configure<Graph>(options => configuration.GetSection("Graph").Bind(options));
+            services.Configure<AppSettings>(options => configuration.Bind(options));
 
         }
 

@@ -5,16 +5,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 namespace Office365GmailMigratorChecker
 {
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService)
+        public Application(GmailService gmailService, GraphService graphService, IOptions<AppSettings> settings)
         {
             _gmailService = gmailService;
             _graphService = graphService;
+            _settings = settings.Value;
 
         }
 
@@ -22,12 +24,13 @@ namespace Office365GmailMigratorChecker
         const int period = 3;
         private GmailService _gmailService;
         private GraphService _graphService;
+        private AppSettings _settings;
 
         public async Task Run()
         {
             try
             {
-                var outlookData = await _graphService.RetrieveData(startYear, period);
+                var outlookData = await _graphService.RetrieveData(_settings.StartYear, _settings.Periods);
                 var messages = FilterOutDuplicates(outlookData);
                 LocalPersistanceService.PersistResultsToFile(messages);
 
