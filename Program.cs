@@ -44,6 +44,7 @@ namespace Office365GmailMigratorChecker
 
             //and then my actual classes
             services.AddTransient<Application>();
+            services.AddSingleton<GmailService>();
             services.AddSingleton<GraphService>();
         }
 
