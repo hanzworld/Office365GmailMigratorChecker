@@ -22,7 +22,7 @@ namespace Office365GmailMigratorChecker
             }
             _settings = settings.Value;
         }
-               
+
 
         private static Initializer ConstructBaseInitializer()
         {
@@ -49,6 +49,24 @@ namespace Office365GmailMigratorChecker
                 HttpClientInitializer = credential,
                 ApplicationName = "Email De-Duplicator"
             };
-        }         
+        }
+
+        public string FindMessageByRFC822(string rfc822MessageId){
+
+            //TODO: allow other usernames, as stored in _settings.Username
+            var searchRequest = Users.Messages.List("me");
+            searchRequest.IncludeSpamTrash = true;
+            searchRequest.MaxResults = 1;
+
+            searchRequest.Q = String.Format("rfc822msgid:{0}", rfc822MessageId);
+
+            var result = searchRequest.Execute();
+
+            if (result.Messages != null)
+            {
+                return result.Messages[0].Id;
+            }
+            return null;
+        }
     }
 }
