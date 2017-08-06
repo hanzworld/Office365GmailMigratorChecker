@@ -30,5 +30,10 @@ namespace Office365GmailMigratorChecker
             }
 
         }
+
+        public static bool LocalFileExists(int year, int periods, PeriodType periodtype)
+        {
+            return File.Exists(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype));
+        }
     }
 }

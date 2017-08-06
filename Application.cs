@@ -30,16 +30,25 @@ namespace Office365GmailMigratorChecker
         {
             try
             {
-                var outlookData = await _graphService.RetrieveData(_settings.StartYear, _settings.Periods);
-                var messages = FilterOutDuplicates(outlookData);
-                LocalPersistanceService.PersistResultsToFile(messages);
+                var messages = new List<MyMessage>();
+                //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
+                if (LocalPersistanceService.LocalFileExists(_settings.StartYear, _settings.Periods, _settings.PeriodLength))
+                {
+                    messages = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                }
+                else
+                {
+                    //get them from the API
+                    var outlookData = await _graphService.RetrieveData(_settings.StartYear, _settings.Periods);
+                    messages = FilterOutDuplicates(outlookData);
+                    LocalPersistanceService.PersistResultsToFile(messages, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                }
+               
 
-                //because I'm completely lazy for now, I'm going to add them to JSON files - this might bite me later, but at least it'll help me write the app without constant testing
-                //System.IO.File.WriteAllText(@"D:\Hanz\Dropbox\Coding\Office365DataStore.json", JsonConvert.SerializeObject(messages));
+                
                 // var db = InstantiateDataStore();
                 // var keyFactory = db.CreateKeyFactory("Message");
 
-                // var messages = ReadResultsFromFile();
                 //now we want to find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
                 //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
 
