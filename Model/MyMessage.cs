@@ -8,8 +8,8 @@ namespace Office365GmailMigratorChecker
 
     public class MyMessage
     {
-        public Message outlookMessage { get; set; }
-        public bool isInGmail { get; set; }
-        public string gmailId { get; set; }
+        public Message OutlookMessage { get; set; }
+        public string GmailId { get; set; }
+        public bool IsMigratedToGmail { get; set; }
     }
 }

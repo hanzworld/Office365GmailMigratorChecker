@@ -32,21 +32,21 @@ namespace Office365GmailMigratorChecker
         {
             var messageToAdd = new Entity()
             {
-                Key = keyFactory.CreateKey(message.outlookMessage.InternetMessageId),
-                ["rfc822msgid"] = message.outlookMessage.InternetMessageId,
-                ["gmailId"] = message.gmailId,
-                ["office365Id"] = message.outlookMessage.Id,
+                Key = keyFactory.CreateKey(message.OutlookMessage.InternetMessageId),
+                ["rfc822msgid"] = message.OutlookMessage.InternetMessageId,
+                ["gmailId"] = message.GmailId,
+                ["office365Id"] = message.OutlookMessage.Id,
                 ["subject"] = new Google.Cloud.Datastore.V1.Value()
                 {
-                    StringValue = message.outlookMessage.InternetMessageId,
+                    StringValue = message.OutlookMessage.InternetMessageId,
                     ExcludeFromIndexes = true
                 },
                 ["sentDateTime"] = new Google.Cloud.Datastore.V1.Value()
                 {
-                    TimestampValue = Timestamp.FromDateTime(message.outlookMessage.SentDateTime.Value.DateTime),
+                    TimestampValue = Timestamp.FromDateTime(message.OutlookMessage.SentDateTime.Value.DateTime),
                     ExcludeFromIndexes = true,
                 },
-                ["migratedToGmail"] = message.outlookMessage.InternetMessageId,
+                ["migratedToGmail"] = message.OutlookMessage.InternetMessageId,
 
 
             };

@@ -63,17 +63,17 @@ namespace Office365GmailMigratorChecker
                 {
                     try
                     {
-                        var gmailId = _gmailService.FindMessageByRFC822(message.outlookMessage.InternetMessageId.Replace("<", "").Replace(">", ""));
+                        var gmailId = _gmailService.FindMessageByRFC822(message.OutlookMessage.InternetMessageId.Replace("<", "").Replace(">", ""));
 
                         if (!String.IsNullOrWhiteSpace(gmailId))
                         {
-                            message.isInGmail = true;
-                            message.gmailId = gmailId;
+                            message.IsMigratedToGmail = true;
+                            message.GmailId = gmailId;
                         }
                     }
                     catch (Exception e)
                     {
-                        errors.Add(String.Format("Couldn't retrieve id {0} from Gmail (date: {1}, subject: {2}). Error was {3}", message.outlookMessage.InternetMessageId, message.outlookMessage.SentDateTime, message.outlookMessage.Subject, e.Message));
+                        errors.Add(String.Format("Couldn't retrieve id {0} from Gmail (date: {1}, subject: {2}). Error was {3}", message.OutlookMessage.InternetMessageId, message.OutlookMessage.SentDateTime, message.OutlookMessage.Subject, e.Message));
                     }
                     finally
                     {
@@ -87,7 +87,7 @@ namespace Office365GmailMigratorChecker
                     
                 }
 
-                var missingMessages = messages.Where(m => !m.isInGmail).ToList();
+                var missingMessages = messages.Where(m => !m.IsMigratedToGmail).ToList();
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those
                 _dataStoreService.WriteToDb(missingMessages);
@@ -105,7 +105,7 @@ namespace Office365GmailMigratorChecker
         public static List<MyMessage> FilterOutDuplicates(List<Message> messages)
         {
             //here are many many duplicates in Outlook, so we need to get rid of them - we'll only take one from each list
-            var filteredmessages = messages.DistinctBy(x => x.InternetMessageId).Select(x => new MyMessage() { outlookMessage = x }).ToList();
+            var filteredmessages = messages.DistinctBy(x => x.InternetMessageId).Select(x => new MyMessage() { OutlookMessage = x }).ToList();
             // testing code for what are the duplicates var duplicates = messages.GroupBy(x => x.InternetMessageId).Where(grp => grp.Count() > 1);
             Console.WriteLine("Ended up with {0}", filteredmessages.Count);
             return filteredmessages;
