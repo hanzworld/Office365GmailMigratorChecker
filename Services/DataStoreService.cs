@@ -19,7 +19,8 @@ namespace Office365GmailMigratorChecker
 
         private DatastoreDb InstantiateDataStore()
         {
-            DatastoreDb db = DatastoreDb.Create("barrowside-mail-maintainer");
+            DatastoreDb db = DatastoreDb.Create("barrowside-mail-manager");
+            
             return db;
         }
 
