@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Office365GmailMigratorChecker
 {
-    class Program
+    class Startup
     {
 
         static void Main()
