@@ -10,6 +10,17 @@ namespace Office365GmailMigratorChecker.Model
 {
     static class DBSetExtensions
     {
+        public static void AddOrUpdate(this DbSet<MyMessage> dbSet, MyMessage data)
+        {
+            var keyVal = data.Rfc822MsgId;
+            var dbVal = dbSet.AsNoTracking().SingleOrDefault(m => m.Rfc822MsgId == keyVal);
+            if (dbVal != null)
+            {
+                dbSet.Update(data);
+                return;
+            }
+            dbSet.Add(data);
+        }
         public static void AddOrUpdate<T>(this DbSet<T> dbSet, T data) where T : class
         {
             var t = typeof(T);
