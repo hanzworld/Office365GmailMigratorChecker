@@ -58,7 +58,13 @@ namespace Office365GmailMigratorChecker
                
                 //STEP 2: find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
                 //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
-                
+
+                //because we may have read out a partially completed file, dont' assume we need to reparse everything!
+                var howManyMessagesAreAlreadyProcessed = messageBatch.ConfirmedMigrationStatus.Count;
+                if (howManyMessagesAreAlreadyProcessed > 1)
+                {
+                    Console.WriteLine("{0} of the loaded message were already processed, quering Gmail API for {1} remaining messages", howManyMessagesAreAlreadyProcessed, messageBatch.Messages.Count - howManyMessagesAreAlreadyProcessed);
+                }
 
                 int i = 0;
                 var errors = new List<string>();
@@ -90,15 +96,14 @@ namespace Office365GmailMigratorChecker
 
                     
                 }
+                Console.WriteLine(messageBatch);
 
-                var missingMessages = messageBatch.Where(m => !m.IsMigratedToGmail).ToList();
                 LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those
                 _dataStoreService.WriteToDb(confirmedMigratedMessages);
 
 
-                Console.WriteLine(missingMessages.Count);
                 //TODO: These are the ones we want to hold onto and persist somewhere that's queryable over and over
             }
             catch (Exception e)
