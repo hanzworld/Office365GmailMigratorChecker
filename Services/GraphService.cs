@@ -29,6 +29,10 @@ namespace Office365GmailMigratorChecker
 
         public async Task<List<Message>> RetrieveBatch(DateTime startDate, DateTime endDate)
         {
+            if (startDate == null || endDate == null || startDate == DateTime.MinValue || endDate == DateTime.MinValue || endDate <= startDate)
+            {
+                throw new Exception("I have received some invalid date combinations, please fix me");
+            }
             var messages = await GetAllEmailsWithinPeriod(startDate, endDate);
             messages = FilterOutDuplicates(messages);
             return messages;
