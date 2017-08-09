@@ -78,7 +78,7 @@ namespace Office365GmailMigratorChecker
                 LocalPersistanceService.PersistResultsToFile(messageBatch);
             }
         }
-        
+
         private MessageBatch MatchToGmailData(MessageBatch messageBatch)
         {
             //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
@@ -145,9 +145,6 @@ namespace Office365GmailMigratorChecker
                 LocalPersistanceService.PersistResultsToFile(messageBatch);
             }
             return messageBatch;
-
         }
-
-
     }
 }
