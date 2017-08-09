@@ -109,7 +109,8 @@ namespace Office365GmailMigratorChecker
             }
             catch (Exception e)
             {
-
+                Console.WriteLine($"ERROR: {e}");
+            }
             finally
             {
                 //always save wherever we got to so I don't have to keep rehitting the APIs again
