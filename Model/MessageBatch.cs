@@ -14,20 +14,17 @@ namespace Office365GmailMigratorChecker.Model
         {
         }        
 
-        public MessageBatch(int startYear, int period, PeriodType periodLength)
+        public MessageBatch(DateTime startDate, DateTime endDate)
         {
-            PeriodLength = periodLength;
-            Period = period;
-            StartYear = startYear;
+            EndDate = endDate;
+            StartDate = startDate;
         }
         
         public List<MyMessage> Messages { get; set; }
         [JsonProperty]
-        public int StartYear { get; private set; }
+        public DateTime StartDate { get; private set; }
         [JsonProperty]
-        public int Period { get; private set; }
-        [JsonProperty]
-        public PeriodType PeriodLength { get; private set; }
+        public DateTime EndDate { get; private set; }
 
         [JsonIgnore]
         public List<MyMessage> ConfirmedMigrationStatus { get {
