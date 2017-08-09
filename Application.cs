@@ -49,7 +49,9 @@ namespace Office365GmailMigratorChecker
                 {
                     //get them from the API
                     var outlookData = await _graphService.RetrieveBatch(_settings.StartYear, _settings.Periods);
-                    messageBatch = FilterOutDuplicates(outlookData);
+                    //convert them into a data format we actually can use, and persist
+                    //TODO - put this in a proper converter
+                    messageBatch = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
                     LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                
@@ -102,14 +104,6 @@ namespace Office365GmailMigratorChecker
             }
         }
 
-        public static List<MyMessage> FilterOutDuplicates(List<Message> messages)
-        {
-            //here are many many duplicates in Outlook, so we need to get rid of them - we'll only take one from each list
-            var filteredmessages = messages.DistinctBy(x => x.InternetMessageId).Select(x => new MyMessage() { OutlookMessage = x }).ToList();
-            // testing code for what are the duplicates var duplicates = messages.GroupBy(x => x.InternetMessageId).Where(grp => grp.Count() > 1);
-            Console.WriteLine("Ended up with {0}", filteredmessages.Count);
-            return filteredmessages;
-
-        }
+       
     }
 }

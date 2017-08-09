@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,6 +57,15 @@ namespace Office365GmailMigratorChecker
                 Console.WriteLine("New batch, now {0}", messages.Count);
             }
             return messages;
+        }
+
+        private List<Message> FilterOutDuplicates(List<Message> messages)
+        {
+            //here are many many duplicates in Outlook, so we need to get rid of them - we'll only take one from each list
+            var filteredmessages = messages.DistinctBy(x => x.InternetMessageId).ToList();
+            // testing code for what are the duplicates var duplicates = messages.GroupBy(x => x.InternetMessageId).Where(grp => grp.Count() > 1);
+            Console.WriteLine("Ended up with {0} unique messages retrieved", filteredmessages.Count);
+            return filteredmessages;
 
         }
 
