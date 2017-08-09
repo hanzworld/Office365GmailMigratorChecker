@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using Office365GmailMigratorChecker.Model;
 
 namespace Office365GmailMigratorChecker
 {

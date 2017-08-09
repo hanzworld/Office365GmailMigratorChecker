@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Office365GmailMigratorChecker
+namespace Office365GmailMigratorChecker.Model
 {
     public class MyMessage
     {   
