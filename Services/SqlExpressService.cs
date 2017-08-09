@@ -27,7 +27,7 @@ namespace Office365GmailMigratorChecker
             }
         }
 
-        private void CreateRecordEntry(MyMessage message)
+        private void WriteToDb(MyMessage message)
         {
             using (var context = new MyMessageDbContext())
             {
