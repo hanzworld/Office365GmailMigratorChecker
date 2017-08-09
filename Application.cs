@@ -28,8 +28,6 @@ namespace Office365GmailMigratorChecker
 
         }
 
-        const int startYear = 2013;
-        const int period = 3;
         private GmailService _gmailService;
         private GraphService _graphService;
         private AppSettings _settings;
