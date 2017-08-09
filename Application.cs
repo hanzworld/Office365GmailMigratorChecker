@@ -54,6 +54,7 @@ namespace Office365GmailMigratorChecker
 
             try
             {
+                Console.WriteLine($"Looking between {startDate} and {endDate}");
                 // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
                 messageBatch = await GetOutlookData(messageBatch);
 
