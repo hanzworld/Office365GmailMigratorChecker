@@ -35,6 +35,7 @@ namespace Office365GmailMigratorChecker
 
         public async Task Run()
         {
+            
             var messageBatch = new MessageBatch(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
 
             try
@@ -50,6 +51,7 @@ namespace Office365GmailMigratorChecker
                 {
                     //get them from the API
                     var outlookData = await _graphService.RetrieveBatch(_settings.StartYear, _settings.Periods);
+                    if (outlookData.Count == 0) return;
                     //convert them into a data format we actually can use, and persist
                     //TODO - put this in a proper converter
                     messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
