@@ -16,14 +16,14 @@ namespace Office365GmailMigratorChecker.Migrations
                 .HasAnnotation("ProductVersion", "1.1.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Office365GmailMigratorChecker.MyMessage", b =>
+            modelBuilder.Entity("Office365GmailMigratorChecker.Model.MyMessage", b =>
                 {
                     b.Property<string>("Rfc822MsgId");
 
                     b.Property<string>("GmailId")
                         .HasColumnType("VARCHAR(255)");
 
-                    b.Property<bool>("IsMigratedToGmail");
+                    b.Property<bool?>("IsMigratedToGmail");
 
                     b.Property<string>("Office365Id")
                         .IsRequired()
