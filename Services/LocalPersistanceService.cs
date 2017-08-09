@@ -51,7 +51,7 @@ namespace Office365GmailMigratorChecker
         
         private static string ConstructFileName(MessageBatch batch)
         {
-            return String.Format(@"Office365DataStore-{0}-{1}{2}.json", batch.StartYear, batch.Period, batch.PeriodLength);
+            return String.Format(@"Office365DataStore-{0}-{1}.json", batch.StartDate, batch.EndDate);
         }
 
     }

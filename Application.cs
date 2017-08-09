@@ -137,7 +137,7 @@ namespace Office365GmailMigratorChecker
             else
             {
                 //get them from the API
-                var outlookData = await _graphService.RetrieveBatch(_settings.StartYear, _settings.Periods);
+                var outlookData = await _graphService.RetrieveBatch(messageBatch.StartDate, messageBatch.EndDate);
                 if (outlookData.Count == 0) return null;
                 //convert them into a data format we actually can use, and persist
 
