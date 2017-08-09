@@ -12,7 +12,7 @@ namespace Office365GmailMigratorChecker
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService, DataStoreService dataStoreService, IOptions<AppSettings> settings)
+        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, IOptions<AppSettings> settings)
         {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.StartYear == 0)
@@ -32,7 +32,7 @@ namespace Office365GmailMigratorChecker
         private GmailService _gmailService;
         private GraphService _graphService;
         private AppSettings _settings;
-        private DataStoreService _dataStoreService;
+        private SqlExpressService _dataStoreService;
 
         public async Task Run()
         {

@@ -41,7 +41,7 @@ namespace Office365GmailMigratorChecker
             services.AddTransient<Application>();
             services.AddSingleton<GmailService>();
             services.AddSingleton<GraphService>();
-            services.AddSingleton<DataStoreService>();
+            services.AddSingleton<SqlExpressService>();
 
             ILoggerFactory loggerFactory = new LoggerFactory()
                 .AddConsole()
