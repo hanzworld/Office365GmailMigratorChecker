@@ -41,8 +41,6 @@ namespace Office365GmailMigratorChecker
 
         private async Task<List<Message>> GetAllEmailsWithinPeriod(DateTime startDate, DateTime endDate)
         {
-            //TODO Need to cache the results so I stop querying the API - or chuck them in a DB?
-
             GraphServiceClient graphClient = new GraphServiceClient(new AzureAuthenticationProvider(_settings));
 
             //todo - iterate through every year
