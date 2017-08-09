@@ -28,7 +28,7 @@ namespace Office365GmailMigratorChecker.Model
                 throw new Exception($"{t.FullName} does not have a KeyAttribute field. Unable to exec AddOrUpdate call.");
             }
             var keyVal = keyField.GetValue(data);            
-            var dbVal = dbSet.Find(keyVal);
+            var dbVal = dbSet.AsNoTracking().SingleOrDefault(m => keyField.GetValue(m) == keyVal);
             if (dbVal != null)
             {
                 dbSet.Update(data);
