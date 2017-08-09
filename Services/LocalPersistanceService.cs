@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Office365GmailMigratorChecker.Model;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Office365GmailMigratorChecker
 {
