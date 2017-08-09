@@ -11,13 +11,13 @@ namespace Office365GmailMigratorChecker.Model
     public class MyMessage
     {   
         [Key]
+        [Column(TypeName = "VARCHAR(255)")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string Office365Id { get; private set; }
+
         public string Rfc822MsgId { get; private set; }
         [Column(TypeName = "VARCHAR(255)")]
-        public string GmailId { get; set; }
-        [Required]
-        [Column(TypeName = "VARCHAR(255)")]
-        public string Office365Id { get; private set; }
+        public string GmailId { get; set; }        
         public bool? IsMigratedToGmail { get; set; }
         [Required]
         public string Subject { get; private set; }
