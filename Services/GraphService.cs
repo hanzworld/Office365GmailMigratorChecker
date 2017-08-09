@@ -25,7 +25,7 @@ namespace Office365GmailMigratorChecker
             
         }
 
-        public async Task<List<Message>> RetrieveData(int startYear, int period)
+        public async Task<List<Message>> RetrieveBatch(int startYear, int period)
         {
             //TODO Need to cache the results so I stop querying the API - or chuck them in a DB?
 

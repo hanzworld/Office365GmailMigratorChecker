@@ -39,18 +39,18 @@ namespace Office365GmailMigratorChecker
             try
             {
                 // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
-                var messages = new List<MyMessage>();
+                var messageBatch = new List<MyMessage>();
                 //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
                 if (LocalPersistanceService.LocalFileExists(_settings.StartYear, _settings.Periods, _settings.PeriodLength))
                 {
-                    messages = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                    messageBatch = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                 else
                 {
                     //get them from the API
-                    var outlookData = await _graphService.RetrieveData(_settings.StartYear, _settings.Periods);
-                    messages = FilterOutDuplicates(outlookData);
-                    LocalPersistanceService.PersistResultsToFile(messages, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                    var outlookData = await _graphService.RetrieveBatch(_settings.StartYear, _settings.Periods);
+                    messageBatch = FilterOutDuplicates(outlookData);
+                    LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                
                 //STEP 2: find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
@@ -87,10 +87,10 @@ namespace Office365GmailMigratorChecker
                     
                 }
 
-                var missingMessages = messages.Where(m => !m.IsMigratedToGmail).ToList();
+                var missingMessages = messageBatch.Where(m => !m.IsMigratedToGmail).ToList();
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those
-                _dataStoreService.WriteToDb(missingMessages);
+                _dataStoreService.WriteToDb(confirmedMigratedMessages);
 
 
                 Console.WriteLine(missingMessages.Count);
