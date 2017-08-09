@@ -37,7 +37,20 @@ namespace Office365GmailMigratorChecker
         {
             //TODO start with the dates in the settings, then iterate forrward the specific length of time, putting this in a for loop
 
-            var messageBatch = new MessageBatch(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+            var startDate = new DateTime(_settings.StartYear, 1, 1);
+            //calculate end date
+            var endDate = startDate;
+            switch (_settings.PeriodLength)
+            {
+                case PeriodType.Year:
+                    endDate.AddYears(_settings.Periods);
+                    return;
+                case PeriodType.Month:
+                    endDate.AddMonths(_settings.Periods);
+                    return;
+            }
+            
+            var messageBatch = new MessageBatch(startDate, endDate);
 
             try
             {
