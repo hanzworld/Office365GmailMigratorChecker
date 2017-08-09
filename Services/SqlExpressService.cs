@@ -1,6 +1,7 @@
 using Office365GmailMigratorChecker.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Office365GmailMigratorChecker
 {
@@ -17,8 +18,10 @@ namespace Office365GmailMigratorChecker
                     {
                         context.Messages.AddOrUpdate(message);
                     }
+                    
                     context.SaveChanges();
-
+                    Console.WriteLine($"Saved {context.ChangeTracker.Entries().Count()} of {messages.Count} records to database ({context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Modified)} updates, {context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Added)} inserts, {context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Unchanged)} existing)");
+                    
                 }
             }
             catch (Exception e)
