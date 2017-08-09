@@ -33,7 +33,7 @@ namespace Office365GmailMigratorChecker.Model
             get { return _outlookMessage; }
             set { _outlookMessage = value;
                 Rfc822MsgId = OutlookMessage.InternetMessageId;
-                Subject = OutlookMessage.InternetMessageId;
+                Subject = OutlookMessage.Subject;
                 Office365Id = OutlookMessage.Id;
                 SentDateTime = OutlookMessage.SentDateTime.Value.DateTime;
             }
