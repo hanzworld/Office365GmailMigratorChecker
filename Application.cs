@@ -35,14 +35,16 @@ namespace Office365GmailMigratorChecker
 
         public async Task Run()
         {
+            var messageBatch = new MessageBatch(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+
             try
             {
                 // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
-                var messageBatch = new List<MyMessage>();
+                
                 //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
                 if (LocalPersistanceService.LocalFileExists(_settings.StartYear, _settings.Periods, _settings.PeriodLength))
                 {
-                    messageBatch = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                    messageBatch.Messages = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                 else
                 {
@@ -50,7 +52,7 @@ namespace Office365GmailMigratorChecker
                     var outlookData = await _graphService.RetrieveBatch(_settings.StartYear, _settings.Periods);
                     //convert them into a data format we actually can use, and persist
                     //TODO - put this in a proper converter
-                    messageBatch = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
+                    messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
                     LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                
