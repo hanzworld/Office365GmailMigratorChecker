@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
 using Office365GmailMigratorChecker.Model;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Office365GmailMigratorChecker
 {
