@@ -65,10 +65,11 @@ namespace Office365GmailMigratorChecker
                     try
                     {
                         var gmailId = _gmailService.FindMessageByRFC822(message.OutlookMessage.InternetMessageId.Replace("<", "").Replace(">", ""));
+                        bool isInGmail = !String.IsNullOrWhiteSpace(gmailId);
 
-                        if (!String.IsNullOrWhiteSpace(gmailId))
-                        {
-                            message.IsMigratedToGmail = true;
+                        message.IsMigratedToGmail = isInGmail;
+
+                        if (isInGmail) { 
                             message.GmailId = gmailId;
                         }
                     }
