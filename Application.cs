@@ -110,6 +110,10 @@ namespace Office365GmailMigratorChecker
             catch (Exception e)
             {
 
+            finally
+            {
+                //always save wherever we got to so I don't have to keep rehitting the APIs again
+                LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
             }
         }
 
