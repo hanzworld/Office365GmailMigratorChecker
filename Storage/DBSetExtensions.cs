@@ -12,8 +12,8 @@ namespace Office365GmailMigratorChecker.Model
     {
         public static void AddOrUpdate(this DbSet<MyMessage> dbSet, MyMessage data)
         {
-            var keyVal = data.Rfc822MsgId;
-            var dbVal = dbSet.AsNoTracking().SingleOrDefault(m => m.Rfc822MsgId == keyVal);
+            var keyVal = data.Office365Id;
+            var dbVal = dbSet.AsNoTracking().SingleOrDefault(m => m.Office365Id == keyVal);
             if (dbVal != null)
             {
                 dbSet.Update(data);
