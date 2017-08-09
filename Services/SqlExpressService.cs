@@ -10,7 +10,11 @@ namespace Office365GmailMigratorChecker
 
         public void WriteToDb(List<MyMessage> messages)
         {
-            messages.ForEach(x => CreateRecordEntry(x));
+            using (var context = new MyMessageDbContext())
+            {
+                context.Messages.AddRange(messages);
+                context.SaveChanges();
+            }
         }
 
         private void CreateRecordEntry(MyMessage message)
@@ -18,6 +22,7 @@ namespace Office365GmailMigratorChecker
             using (var context = new MyMessageDbContext())
             {
                 context.Messages.Add(message);
+                context.SaveChanges();
             }
           
         }
