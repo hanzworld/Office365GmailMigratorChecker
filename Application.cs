@@ -56,7 +56,7 @@ namespace Office365GmailMigratorChecker
             {
                 Console.WriteLine($"Looking between {startDate} and {endDate}");
                 // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
-                messageBatch = await GetOutlookData(messageBatch);
+                messageBatch = await GetOutlookDataAsync(messageBatch);
 
                 //STEP 2: find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
                 messageBatch = MatchToGmailData(messageBatch);
@@ -128,7 +128,7 @@ namespace Office365GmailMigratorChecker
             return messageBatch;
         }
 
-        async Task<MessageBatch> GetOutlookData(MessageBatch messageBatch)
+        async Task<MessageBatch> GetOutlookDataAsync(MessageBatch messageBatch)
         {
             //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
             if (LocalPersistanceService.LocalFileExists(messageBatch))
