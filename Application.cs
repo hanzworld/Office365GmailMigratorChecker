@@ -67,14 +67,13 @@ namespace Office365GmailMigratorChecker
                 //STEP 4: Where we have messages we simply can't work out, store them to work on later
                 _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
 
+                LocalPersistanceService.PersistResultsToFile(messageBatch);
+
                 Console.WriteLine("Complete");
             }
             catch (Exception e)
             {
                 Console.WriteLine($"ERROR: {e}");
-            }
-            finally
-            {
                 //always save wherever we got to so I don't have to keep rehitting the APIs again
                 LocalPersistanceService.PersistResultsToFile(messageBatch);
             }
@@ -123,9 +122,6 @@ namespace Office365GmailMigratorChecker
 
             }
             Console.WriteLine(messageBatch);
-
-            LocalPersistanceService.PersistResultsToFile(messageBatch);
-            return messageBatch;
         }
 
         async Task<MessageBatch> GetOutlookDataAsync(MessageBatch messageBatch)
