@@ -7,7 +7,7 @@ using Office365GmailMigratorChecker;
 
 namespace Office365GmailMigratorChecker.Migrations
 {
-    [DbContext(typeof(SqlExpressService))]
+    [DbContext(typeof(MyMessageDbContext))]
     partial class SqlExpressServiceModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
