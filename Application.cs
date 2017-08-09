@@ -105,6 +105,8 @@ namespace Office365GmailMigratorChecker
 
                 //STEP 4: Where we have messages we simply can't work out, store them to work on later
                 _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
+
+                Console.WriteLine("Complete");
             }
             catch (Exception e)
             {
