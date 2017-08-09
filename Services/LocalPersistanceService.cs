@@ -27,14 +27,22 @@ namespace Office365GmailMigratorChecker
 
         public static MessageBatch ReadResultsFromFile(MessageBatch batch)
         {
-            using (FileStream stream = new FileStream(ConstructFileName(batch), FileMode.Open))
-            using (StreamReader file = new StreamReader(stream))
+            try
             {
-                JsonSerializer serializer = new JsonSerializer();
-                var messages = (MessageBatch)serializer.Deserialize(file, typeof(MessageBatch));
-                Console.WriteLine("Read {0} objects from file", messages.Messages.Count);
-                return messages;
+                using (FileStream stream = new FileStream(ConstructFileName(batch), FileMode.Open))
+                using (StreamReader file = new StreamReader(stream))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    var messages = (MessageBatch)serializer.Deserialize(file, typeof(MessageBatch));
+                    Console.WriteLine("Read {0} objects from file", messages.Messages.Count);
+                    return messages;
+                }
             }
+            catch (Exception e)
+            {
+               //TODO handle exceptions
+            }
+            return null;
 
         }
 
