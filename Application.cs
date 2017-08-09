@@ -39,15 +39,15 @@ namespace Office365GmailMigratorChecker
 
             var startDate = new DateTime(_settings.StartYear, 1, 1);
             //calculate end date
-            var endDate = startDate;
+            DateTime endDate = startDate;
             switch (_settings.PeriodLength)
             {
                 case PeriodType.Year:
-                    endDate.AddYears(_settings.Periods);
-                    return;
+                    endDate = startDate.AddYears(_settings.Periods);
+                    break ;
                 case PeriodType.Month:
-                    endDate.AddMonths(_settings.Periods);
-                    return;
+                    endDate = startDate.AddMonths(_settings.Periods);
+                    break;
             }
             
             var messageBatch = new MessageBatch(startDate, endDate);
