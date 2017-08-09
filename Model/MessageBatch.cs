@@ -22,13 +22,12 @@ namespace Office365GmailMigratorChecker.Model
         }
         
         public List<MyMessage> Messages { get; set; }
-
-        [JsonIgnore]
-        public int StartYear { get; }
-        [JsonIgnore]
-        public int Period { get; }
-        [JsonIgnore]
-        public PeriodType PeriodLength { get; }
+        [JsonProperty]
+        public int StartYear { get; private set; }
+        [JsonProperty]
+        public int Period { get; private set; }
+        [JsonProperty]
+        public PeriodType PeriodLength { get; private set; }
 
         [JsonIgnore]
         public List<MyMessage> ConfirmedMigrationStatus { get {
