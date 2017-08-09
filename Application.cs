@@ -122,6 +122,7 @@ namespace Office365GmailMigratorChecker
 
             }
             Console.WriteLine(messageBatch);
+            return messageBatch;
         }
 
         async Task<MessageBatch> GetOutlookDataAsync(MessageBatch messageBatch)
@@ -135,7 +136,7 @@ namespace Office365GmailMigratorChecker
             {
                 //get them from the API
                 var outlookData = await _graphService.RetrieveBatch(messageBatch.StartDate, messageBatch.EndDate);
-                if (outlookData.Count == 0) return null;
+                if (outlookData.Count == 0) return messageBatch;
                 //convert them into a data format we actually can use, and persist
 
                 //TODO - put this in a proper converter
