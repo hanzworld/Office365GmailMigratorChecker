@@ -35,7 +35,8 @@ namespace Office365GmailMigratorChecker
 
         public async Task Run()
         {
-            
+            //TODO start with the dates in the settings, then iterate forrward the specific length of time, putting this in a for loop
+
             var messageBatch = new MessageBatch(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
 
             try
