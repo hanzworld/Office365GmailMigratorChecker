@@ -18,7 +18,7 @@ namespace Office365GmailMigratorChecker
                 throw new Exception("You're asking me to save an empty file Mr President, that's not supposed to happen");
             }
 
-            using (StreamWriter file = File.CreateText(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype)))
+            using (StreamWriter file = File.CreateText(ConstructFileName(batch)))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, batch);
@@ -27,7 +27,7 @@ namespace Office365GmailMigratorChecker
 
         public static MessageBatch ReadResultsFromFile(MessageBatch batch)
         {
-            using (FileStream stream = new FileStream(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype), FileMode.Open))
+            using (FileStream stream = new FileStream(ConstructFileName(batch), FileMode.Open))
             using (StreamReader file = new StreamReader(stream))
             {
                 JsonSerializer serializer = new JsonSerializer();
@@ -40,7 +40,13 @@ namespace Office365GmailMigratorChecker
 
         public static bool LocalFileExists(MessageBatch batch)
         {
-            return File.Exists(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype));
+            return File.Exists(ConstructFileName(batch));
         }
+        
+        private static string ConstructFileName(MessageBatch batch)
+        {
+            return String.Format(@"Office365DataStore-{0}-{1}{2}.json", batch.StartYear, batch.Period, batch.PeriodLength);
+        }
+
     }
 }
