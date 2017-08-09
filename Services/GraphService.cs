@@ -62,7 +62,7 @@ namespace Office365GmailMigratorChecker
                 batchResults = await batchResults.NextPageRequest.GetAsync();
                 Console.WriteLine("{0} : {1}", batchResults[0].SentDateTime, batchResults[0].InternetMessageId);
                 messages.AddRange(batchResults);
-                Console.WriteLine("New batch, now {0}", messages.Count);
+                Console.WriteLine("Retrieving new batch from Microsoft, now at {0}", messages.Count);
             }
             return messages;
         }

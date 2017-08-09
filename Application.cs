@@ -90,7 +90,7 @@ namespace Office365GmailMigratorChecker
                         i++;
                         if (i % 100 == 0)
                         {
-                            Console.WriteLine("Now at {0}00", i / 100);
+                            Console.WriteLine("Retriving Gmail information for messages {0}00 and onwards", i / 100);
                         }
                     }
 
