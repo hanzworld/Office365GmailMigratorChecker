@@ -13,7 +13,7 @@ namespace Office365GmailMigratorChecker
         public static void PersistResultsToFile(MessageBatch messages, int year, int periods, PeriodType periodtype)
         {
             //sanity check we don't have
-            if (messages.Messages.Count == 0)
+            if (messages.Messages == null || messages.Messages.Count == 0)
             {
                 throw new Exception("You're asking me to save an empty file Mr President, that's not supposed to happen");
             }
