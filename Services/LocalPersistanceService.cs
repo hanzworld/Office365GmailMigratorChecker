@@ -10,7 +10,7 @@ namespace Office365GmailMigratorChecker
     class LocalPersistanceService
     {
 
-        public static void PersistResultsToFile(List<MyMessage> messages, int year, int periods, PeriodType periodtype)
+        public static void PersistResultsToFile(MessageBatch messages, int year, int periods, PeriodType periodtype)
         {
             using (StreamWriter file = File.CreateText(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype)))
             {
@@ -19,14 +19,14 @@ namespace Office365GmailMigratorChecker
             }
         }
 
-        public static List<MyMessage> ReadResultsFromFile(int year, int periods, PeriodType periodtype)
+        public static MessageBatch ReadResultsFromFile(int year, int periods, PeriodType periodtype)
         {
             using (FileStream stream = new FileStream(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype), FileMode.Open))
             using (StreamReader file = new StreamReader(stream))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                var messages = (List<MyMessage>)serializer.Deserialize(file, typeof(List<MyMessage>));
-                Console.WriteLine("Read {0} objects from file", messages.Count);
+                var messages = (MessageBatch)serializer.Deserialize(file, typeof(MessageBatch));
+                Console.WriteLine("Read {0} objects from file", messages.Messages.Count);
                 return messages;
             }
 

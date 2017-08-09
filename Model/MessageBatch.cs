@@ -27,14 +27,17 @@ namespace Office365GmailMigratorChecker.Model
         
         public List<MyMessage> Messages { get; set; }
 
+        [JsonIgnore]
         public List<MyMessage> ConfirmedMigrationStatus { get {
                 return Messages.Where(m => m.IsMigratedToGmail.HasValue).ToList();
             } }
 
+        [JsonIgnore]
         public List<MyMessage> UnconfirmedMigrationStatus { get {
                return Messages.Where(m => !m.IsMigratedToGmail.HasValue).ToList();
             } }
 
+        [JsonIgnore]
         public List<MyMessage> MigratedMessages
         {
             get
@@ -43,6 +46,7 @@ namespace Office365GmailMigratorChecker.Model
             }
         }
 
+        [JsonIgnore]
         public List<MyMessage> NotMigratedMessages
         {
             get

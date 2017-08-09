@@ -44,7 +44,7 @@ namespace Office365GmailMigratorChecker
                 //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
                 if (LocalPersistanceService.LocalFileExists(_settings.StartYear, _settings.Periods, _settings.PeriodLength))
                 {
-                    messageBatch.Messages = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                    messageBatch = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
                 }
                 else
                 {
@@ -92,6 +92,7 @@ namespace Office365GmailMigratorChecker
                 }
 
                 var missingMessages = messageBatch.Where(m => !m.IsMigratedToGmail).ToList();
+                LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those
                 _dataStoreService.WriteToDb(confirmedMigratedMessages);
