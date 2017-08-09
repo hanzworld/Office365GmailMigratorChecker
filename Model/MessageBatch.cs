@@ -8,12 +8,7 @@ namespace Office365GmailMigratorChecker.Model
 {
     class MessageBatch
     {
-        [JsonIgnore]
-        private int startYear;
-        [JsonIgnore]
-        private int period;
-        [JsonIgnore]
-        private PeriodType periodLength;
+        
 
         public MessageBatch()
         {
@@ -21,10 +16,19 @@ namespace Office365GmailMigratorChecker.Model
 
         public MessageBatch(int startYear, int period, PeriodType periodLength)
         {
-            this.periodLength = periodLength;
+            PeriodLength = periodLength;
+            Period = period;
+            StartYear = startYear;
         }
         
         public List<MyMessage> Messages { get; set; }
+
+        [JsonIgnore]
+        public int StartYear { get; }
+        [JsonIgnore]
+        public int Period { get; }
+        [JsonIgnore]
+        public PeriodType PeriodLength { get; }
 
         [JsonIgnore]
         public List<MyMessage> ConfirmedMigrationStatus { get {

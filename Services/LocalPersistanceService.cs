@@ -10,10 +10,10 @@ namespace Office365GmailMigratorChecker
     class LocalPersistanceService
     {
 
-        public static void PersistResultsToFile(MessageBatch messages, int year, int periods, PeriodType periodtype)
+        public static void PersistResultsToFile(MessageBatch batch)
         {
             //sanity check we don't have
-            if (messages.Messages == null || messages.Messages.Count == 0)
+            if (batch.Messages == null || batch.Messages.Count == 0)
             {
                 throw new Exception("You're asking me to save an empty file Mr President, that's not supposed to happen");
             }
@@ -21,11 +21,11 @@ namespace Office365GmailMigratorChecker
             using (StreamWriter file = File.CreateText(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype)))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, messages);
+                serializer.Serialize(file, batch);
             }
         }
 
-        public static MessageBatch ReadResultsFromFile(int year, int periods, PeriodType periodtype)
+        public static MessageBatch ReadResultsFromFile(MessageBatch batch)
         {
             using (FileStream stream = new FileStream(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype), FileMode.Open))
             using (StreamReader file = new StreamReader(stream))
@@ -38,7 +38,7 @@ namespace Office365GmailMigratorChecker
 
         }
 
-        public static bool LocalFileExists(int year, int periods, PeriodType periodtype)
+        public static bool LocalFileExists(MessageBatch batch)
         {
             return File.Exists(String.Format(@"Office365DataStore-{0}-{1}{2}.json", year, periods, periodtype));
         }

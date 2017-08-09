@@ -62,7 +62,7 @@ namespace Office365GmailMigratorChecker
             finally
             {
                 //always save wherever we got to so I don't have to keep rehitting the APIs again
-                LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                LocalPersistanceService.PersistResultsToFile(messageBatch);
             }
         }
         
@@ -110,15 +110,16 @@ namespace Office365GmailMigratorChecker
             }
             Console.WriteLine(messageBatch);
 
-            LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
+            LocalPersistanceService.PersistResultsToFile(messageBatch);
+            return messageBatch;
         }
 
         async Task<MessageBatch> GetOutlookData(MessageBatch messageBatch)
         {
             //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
-            if (LocalPersistanceService.LocalFileExists(_settings.StartYear, _settings.Periods, _settings.PeriodLength))
+            if (LocalPersistanceService.LocalFileExists(messageBatch))
             {
-                messageBatch = LocalPersistanceService.ReadResultsFromFile(_settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                messageBatch = LocalPersistanceService.ReadResultsFromFile(messageBatch);
             }
             else
             {
@@ -130,7 +131,7 @@ namespace Office365GmailMigratorChecker
                 //TODO - put this in a proper converter
                 messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
 
-                LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
+                LocalPersistanceService.PersistResultsToFile(messageBatch);
             }
             return messageBatch;
 
