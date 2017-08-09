@@ -100,12 +100,9 @@ namespace Office365GmailMigratorChecker
 
                 LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
 
-                // STEP 3: Where we have messages which are not migrated, we need to store those
+                // STEP 3: Where we have messages which are not migrated, we need to store those so it's queryable over and over
                 _dataStoreService.WriteToDb(messageBatch.NotMigratedMessages);
-
-
-
-                //TODO: These are the ones we want to hold onto and persist somewhere that's queryable over and over
+                
             }
             catch (Exception e)
             {
