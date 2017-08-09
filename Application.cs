@@ -102,7 +102,9 @@ namespace Office365GmailMigratorChecker
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those so it's queryable over and over
                 _dataStoreService.WriteToDb(messageBatch.NotMigratedMessages);
-                
+
+                //STEP 4: Where we have messages we simply can't work out, store them to work on later
+                _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
             }
             catch (Exception e)
             {
