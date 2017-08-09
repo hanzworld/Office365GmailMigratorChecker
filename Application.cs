@@ -68,7 +68,7 @@ namespace Office365GmailMigratorChecker
 
                 int i = 0;
                 var errors = new List<string>();
-                foreach (var message in messages)
+                foreach (var message in messageBatch.UnconfirmedMigrationStatus)
                 {
                     try
                     {
@@ -101,7 +101,8 @@ namespace Office365GmailMigratorChecker
                 LocalPersistanceService.PersistResultsToFile(messageBatch, _settings.StartYear, _settings.Periods, _settings.PeriodLength);
 
                 // STEP 3: Where we have messages which are not migrated, we need to store those
-                _dataStoreService.WriteToDb(confirmedMigratedMessages);
+                _dataStoreService.WriteToDb(messageBatch.NotMigratedMessages);
+
 
 
                 //TODO: These are the ones we want to hold onto and persist somewhere that's queryable over and over
