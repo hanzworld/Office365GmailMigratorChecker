@@ -23,7 +23,6 @@ namespace Office365GmailMigratorChecker.Model
         {
             this.periodLength = periodLength;
         }
-
         
         public List<MyMessage> Messages { get; set; }
 
@@ -78,7 +77,7 @@ namespace Office365GmailMigratorChecker.Model
             int countOfMessagesUnknownIfMigrated = countOfMessagesInBatch - countOfMessagesWeKnowWhetherMigratedOrNot;
 
 
-            return String.Format("Totals: {1} already matched/unmatched, {2} found to match (will include previously matched), {3} confirmed unmatched, {4} unknown)",
+            return String.Format("Totals: {0} already matched/unmatched, {1} found to match (will include previously matched), {2} confirmed unmatched, {3} unknown)",
                     numberAlreadyProcessed,
                     countOfMessagesMigrated,
                     countOfMessagesNotMigrated,
