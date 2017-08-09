@@ -8,6 +8,8 @@ namespace Office365GmailMigratorChecker.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("ALTER DATABASE [Office365GmailMigratorChecker] COLLATE SQL_Latin1_General_CP1_CS_AS;", suppressTransaction: true);
+
             migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
