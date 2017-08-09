@@ -11,10 +11,21 @@ namespace Office365GmailMigratorChecker
 
         public void WriteToDb(List<MyMessage> messages)
         {
-            using (var context = new MyMessageDbContext())
+            try
             {
-                context.Messages.AddRange(messages);
-                context.SaveChanges();
+                using (var context = new MyMessageDbContext())
+                {
+                    foreach(var message in messages)
+                    {
+                        context.Messages.AddOrUpdate(message);
+                    }
+                    context.SaveChanges();
+
+                }
+            }
+            catch (Exception e)
+            {
+                //handle exception
             }
         }
 
