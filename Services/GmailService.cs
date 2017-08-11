@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
@@ -13,14 +14,16 @@ namespace Office365GmailMigratorChecker
     class GmailService : OfficialGmailService
     {
         private Gmail _settings;
+        private ILogger<GmailService> _logger;
 
-        public GmailService(IOptions<Gmail> settings) : base(ConstructBaseInitializer()) {
+        public GmailService(IOptions<Gmail> settings, ILogger<GmailService> logger) : base(ConstructBaseInitializer()) {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.Username == null)
             {
                 throw new Exception("Failed to load configuration settings correctly");
             }
             _settings = settings.Value;
+            _logger = logger;
         }
 
 

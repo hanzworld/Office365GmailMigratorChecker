@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Office365GmailMigratorChecker.Model;
 using System;
 using System.IO;
@@ -7,6 +8,12 @@ namespace Office365GmailMigratorChecker
 {
     class LocalPersistanceService
     {
+        private ILogger<LocalPersistanceService> _logger;
+
+        public LocalPersistanceService(ILogger<LocalPersistanceService> logger)
+        {
+            _logger = logger;
+        }
 
         public static void PersistResultsToFile(MessageBatch batch)
         {

@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Office365GmailMigratorChecker.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Office365GmailMigratorChecker
 {
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, IOptions<AppSettings> settings)
+        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, IOptions<AppSettings> settings, ILogger<Application> logging)
         {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.StartYear == 0)
@@ -25,6 +26,7 @@ namespace Office365GmailMigratorChecker
             _graphService = graphService;
             _dataStoreService = dataStoreService;
             _settings = settings.Value;
+            _logging = logging;
 
         }
 
@@ -32,6 +34,7 @@ namespace Office365GmailMigratorChecker
         private GraphService _graphService;
         private AppSettings _settings;
         private SqlExpressService _dataStoreService;
+        private ILogger<Application> _logging;
 
         public async Task Run()
         {

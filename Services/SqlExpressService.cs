@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Office365GmailMigratorChecker.Model;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,12 @@ namespace Office365GmailMigratorChecker
 {
     class SqlExpressService
     {
+        private ILogger<SqlExpressService> _logger;
+
+        public SqlExpressService(ILogger<SqlExpressService> logger)
+        {
+            _logger = logger;
+        }
 
         public void WriteToDb(List<MyMessage> messages)
         {

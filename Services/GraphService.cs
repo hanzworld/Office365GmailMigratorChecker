@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MoreLinq;
@@ -14,8 +15,9 @@ namespace Office365GmailMigratorChecker
     class GraphService
     {
         Graph _settings;
+        private ILogger<GraphService> _logger;
 
-        public GraphService(IOptions<Graph> settings)
+        public GraphService(IOptions<Graph> settings, ILogger<GraphService> logger)
         {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.Username == null)
@@ -24,6 +26,7 @@ namespace Office365GmailMigratorChecker
             }
 
             _settings = settings.Value;
+            _logger = logger;
             
         }
 
