@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Office365GmailMigratorChecker.Model;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Office365GmailMigratorChecker
@@ -26,11 +28,11 @@ namespace Office365GmailMigratorChecker
             using (StreamWriter file = File.CreateText(ConstructFileName(batch)))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, batch);
+                serializer.Serialize(file, batch.Messages);
             }
         }
 
-        public MessageBatch ReadResultsFromFile(MessageBatch batch)
+        public List<MyMessage> ReadResultsFromFile(MessageBatch batch)
         {
             try
             {
@@ -39,8 +41,10 @@ namespace Office365GmailMigratorChecker
                 using (StreamReader file = new StreamReader(stream))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    var messages = (MessageBatch)serializer.Deserialize(file, typeof(MessageBatch));
-                    _logger.LogDebug("Read {0} objects from file", messages.Messages.Count);
+                    ITraceWriter writer = new MemoryTraceWriter();
+                    serializer.TraceWriter = writer;
+                    var messages = (List<MyMessage>)serializer.Deserialize(file, typeof(List<MyMessage>));
+                    _logger.LogDebug("Read {0} objects from file", messages.Count);
                     return messages;
                 }
             }
