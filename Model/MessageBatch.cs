@@ -70,7 +70,7 @@ namespace Office365GmailMigratorChecker.Model
         {
             if (_localPersistanceService.LocalFileExists(this))
             {
-                this.Messages = _localPersistanceService.ReadResultsFromFile(this).Messages;
+                this.Messages = _localPersistanceService.ReadResultsFromFile(this);
                 this.RetrievedFromCache = true;
             }
             else
