@@ -41,49 +41,50 @@ namespace Office365GmailMigratorChecker
         public async Task Run()
         {
             //TODO start with the dates in the settings, then iterate forrward the specific length of time, putting this in a for loop
-
-            var startDate = new DateTime(_settings.StartYear, 1, 1);
-            //calculate end date
-            DateTime endDate = startDate;
-            switch (_settings.PeriodLength)
+            for (var startDate = new DateTime(_settings.StartYear, 1, 1); startDate < DateTime.Now; startDate = startDate.JumpAheadBy(_settings.Periods, _settings.PeriodLength))
             {
-                case PeriodType.Year:
-                    endDate = startDate.AddYears(_settings.Periods);
-                    break ;
-                case PeriodType.Month:
-                    endDate = startDate.AddMonths(_settings.Periods);
+                DateTime endDate = startDate.JumpAheadBy(_settings.Periods, _settings.PeriodLength);
+
+                var messageBatch = _messageBatchFactory.SetupBatch(startDate, endDate);
+                _logger.LogInformation($"Starting processing batch between {messageBatch.StartDate}, ending {messageBatch.EndDate}");
+
+                try
+                {
+
+                    // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
+                    messageBatch = await GetOutlookDataAsync(messageBatch);
+
+                    if (messageBatch.Messages == null || messageBatch.Messages.Count == 0)
+                    {
+                        _logger.LogDebug("No records found"); continue;
+                    }
+
+                    //STEP 2: find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
+                    messageBatch = MatchToGmailData(messageBatch);
+
+                    // STEP 3: Where we have messages which are not migrated, we need to store those so it's queryable over and over
+                    _dataStoreService.WriteToDb(messageBatch.NotMigratedMessages);
+
+                    //STEP 4: Where we have messages we simply can't work out, store them to work on later
+                    _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
+
+                    messageBatch.Finish();
+
+                    _logger.LogInformation("Batch complete");
+                    startDate = endDate;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"ERROR: {e}");
+                    //always save wherever we got to so I don't have to keep rehitting the APIs again
+                    messageBatch.Save();
                     break;
+                }
             }
 
-            var messageBatch = _messageBatchFactory.SetupBatch(startDate, endDate);
-
-            try
-            {
-                _logger.LogInformation($"Looking between {startDate} and {endDate}");
-                // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
-                messageBatch = await GetOutlookDataAsync(messageBatch);
-
-                //STEP 2: find if these have been imported to Gmail - where the only matching criteria is RFC822 MessageID
-                messageBatch = MatchToGmailData(messageBatch);
-
-                // STEP 3: Where we have messages which are not migrated, we need to store those so it's queryable over and over
-                _dataStoreService.WriteToDb(messageBatch.NotMigratedMessages);
-
-                //STEP 4: Where we have messages we simply can't work out, store them to work on later
-                _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
-
-                messageBatch.Save();
-
-                _logger.LogInformation("Complete");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"ERROR: {e}");
-                //always save wherever we got to so I don't have to keep rehitting the APIs again
-                messageBatch.Save();
-            }
+            _logger.LogInformation("Complete");
         }
-
+        
         private MessageBatch MatchToGmailData(MessageBatch messageBatch)
         {
             //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
@@ -149,6 +150,23 @@ namespace Office365GmailMigratorChecker
                 }
             }
             return messageBatch;
+        }
+    }
+
+    static class DateTimeExtensions
+    {
+        public static DateTime JumpAheadBy(this DateTime startDate, int numberOfJumps, PeriodType sizeOfJumps)
+        {
+            //calculate end date
+            switch (sizeOfJumps)
+            {
+                case PeriodType.Year:
+                    return startDate.AddYears(numberOfJumps);
+                case PeriodType.Month:
+                    return startDate.AddMonths(numberOfJumps);
+            }
+            return DateTime.MinValue;
+
         }
     }
 }
