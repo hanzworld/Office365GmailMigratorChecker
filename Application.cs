@@ -45,9 +45,9 @@ namespace Office365GmailMigratorChecker
             {
                 DateTime endDate = startDate.JumpAheadBy(_settings.Periods, _settings.PeriodLength);
 
+                _logger.LogInformation($"Starting processing batch between {startDate}, ending {endDate}");
                 var messageBatch = _messageBatchFactory.SetupBatch(startDate, endDate);
-                _logger.LogInformation($"Starting processing batch between {messageBatch.StartDate}, ending {messageBatch.EndDate}");
-
+                
                 try
                 {
 
