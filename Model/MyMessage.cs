@@ -19,7 +19,6 @@ namespace Office365GmailMigratorChecker.Model
         [Column(TypeName = "VARCHAR(255)")]
         public string GmailId { get; set; }        
         public bool? IsMigratedToGmail { get; set; }
-        [Required]
         public string Subject { get; private set; }
         [Required]
         public DateTime SentDateTime { get; private set; }

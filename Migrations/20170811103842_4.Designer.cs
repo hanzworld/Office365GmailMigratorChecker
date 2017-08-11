@@ -8,9 +8,10 @@ using Office365GmailMigratorChecker;
 namespace Office365GmailMigratorChecker.Migrations
 {
     [DbContext(typeof(MyMessageDbContext))]
-    partial class SqlExpressServiceModelSnapshot : ModelSnapshot
+    [Migration("20170811103842_4")]
+    partial class _4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
