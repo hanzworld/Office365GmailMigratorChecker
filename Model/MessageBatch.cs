@@ -9,7 +9,7 @@ namespace Office365GmailMigratorChecker.Model
     class MessageBatch
     {
         private LocalPersistanceService _localPersistanceService;
-        
+
         public MessageBatch(LocalPersistanceService localPersistanceService, DateTime startDate, DateTime endDate)
         {
             EndDate = endDate;
@@ -29,14 +29,22 @@ namespace Office365GmailMigratorChecker.Model
 
         #region Helper Linq Methods
         [JsonIgnore]
-        public List<MyMessage> ConfirmedMigrationStatus { get {
+        public List<MyMessage> ConfirmedMigrationStatus
+        {
+            get
+            {
                 return Messages.Where(m => m.IsMigratedToGmail.HasValue).ToList();
-            } }
+            }
+        }
 
         [JsonIgnore]
-        public List<MyMessage> UnconfirmedMigrationStatus { get {
-               return Messages.Where(m => !m.IsMigratedToGmail.HasValue).ToList();
-            } }
+        public List<MyMessage> UnconfirmedMigrationStatus
+        {
+            get
+            {
+                return Messages.Where(m => !m.IsMigratedToGmail.HasValue).ToList();
+            }
+        }
 
         [JsonIgnore]
         public List<MyMessage> MigratedMessages
@@ -69,7 +77,7 @@ namespace Office365GmailMigratorChecker.Model
             {
                 this.RetrievedFromCache = false;
             }
-            
+
         }
 
         public void Save()
@@ -100,7 +108,7 @@ namespace Office365GmailMigratorChecker.Model
             //remember messages have three states - either we know it was migrated, we know it wasn't migrated, or we have no idea at all
             int countOfMessagesWeKnowWhetherMigratedOrNot = ConfirmedMigrationStatus.Count - numberAlreadyProcessed;
             int countOfMessagesMigrated = MigratedMessages.Count;
-            
+
             //therefore
             int countOfMessagesNotMigrated = countOfMessagesWeKnowWhetherMigratedOrNot - countOfMessagesMigrated;
             int countOfMessagesUnknownIfMigrated = countOfMessagesInBatch - countOfMessagesWeKnowWhetherMigratedOrNot;
