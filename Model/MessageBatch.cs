@@ -78,6 +78,12 @@ namespace Office365GmailMigratorChecker.Model
 
         }
 
+        public void Finish()
+        {
+            Save();
+            //TODO - get the MessageBatch to print results of the import - it knows them!
+        }
+
 
         //TODO: Make a better way to cater for reading from file 100 messages, 80 of which are already processed, 20 of which aren't, 
         //10 of which we subseuqntly process - need to make this far easier (and accurately accurate, which it isn't at the moment)
