@@ -5,6 +5,7 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Office365GmailMigratorChecker.Model;
+using NLog.Extensions.Logging;
 
 namespace Office365GmailMigratorChecker
 {
@@ -47,8 +48,7 @@ namespace Office365GmailMigratorChecker
             services.AddScoped<MessageBatchFactory>();
 
             ILoggerFactory loggerFactory = new LoggerFactory()
-                .AddConsole()
-                .AddDebug();
+                .AddNLog();
 
             services.AddSingleton(loggerFactory); // Add first my already configured instance
             services.AddLogging(); // Allow ILogger<T>*/
