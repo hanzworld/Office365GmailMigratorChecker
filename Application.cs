@@ -78,6 +78,8 @@ namespace Office365GmailMigratorChecker
                     _logger.LogError($"ERROR: {e}");
                     //always save wherever we got to so I don't have to keep rehitting the APIs again
                     messageBatch.Save();
+                    //for now I am wary of errors meaning that I have a bug, so I do want to stop the whole app on them
+                    // the aim would be that a batch can fail but the program continues on once I know it's resilient enough
                     break;
                 }
             }
