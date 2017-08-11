@@ -17,23 +17,16 @@ namespace Office365GmailMigratorChecker
 
         public void WriteToDb(List<MyMessage> messages)
         {
-            try
+            using (var context = new MyMessageDbContext())
             {
-                using (var context = new MyMessageDbContext())
+                foreach(var message in messages)
                 {
-                    foreach(var message in messages)
-                    {
-                        context.Messages.AddOrUpdate(message);
-                    }
-                    
-                    context.SaveChanges();
-                    _logger.LogInformation($"Saved {context.ChangeTracker.Entries().Count()} of {messages.Count} records to database ({context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Modified)} updates, {context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Added)} inserts, {context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Unchanged)} existing)");
-                    
+                    context.Messages.AddOrUpdate(message);
                 }
-            }
-            catch (Exception e)
-            {
-                //handle exception
+                    
+                context.SaveChanges();
+                _logger.LogInformation($"Saved {context.ChangeTracker.Entries().Count()} of {messages.Count} records to database ({context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Modified)} updates, {context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Added)} inserts, {context.ChangeTracker.Entries().Count(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Unchanged)} existing)");
+                    
             }
         }
 
