@@ -135,6 +135,7 @@ namespace Office365GmailMigratorChecker
 
                 //TODO - put this in a proper converter
                 messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
+                _logger.LogInformation($"Retrieved {outlookData.Count} messages from Microsoft");
 
                 messageBatch.Save();
             }
@@ -147,6 +148,9 @@ namespace Office365GmailMigratorChecker
                 if (howManyMessagesAreAlreadyProcessed > 1)
                 {
                     _logger.LogInformation("Found {0} of these message have already been processed, leaving {1} messages to find information on", howManyMessagesAreAlreadyProcessed, messageBatch.Messages.Count - howManyMessagesAreAlreadyProcessed);
+                } else
+                {
+                    _logger.LogInformation($"Doesn't look like we'd previously processed any of these. Going ahead with {messageBatch.Messages.Count} messages to find information on");
                 }
             }
             return messageBatch;
