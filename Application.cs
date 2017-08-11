@@ -87,14 +87,7 @@ namespace Office365GmailMigratorChecker
         private MessageBatch MatchToGmailData(MessageBatch messageBatch)
         {
             //TODO given we have to make n calls to Gmail API, one for each message, let's at least batch them shall we?
-
-            //because we may have read out a partially completed file, dont' assume we need to reparse everything!
-            var howManyMessagesAreAlreadyProcessed = messageBatch.ConfirmedMigrationStatus.Count;
-            if (howManyMessagesAreAlreadyProcessed > 1)
-            {
-                _logger.LogInformation("{0} of the loaded message were already processed, quering Gmail API for {1} remaining messages", howManyMessagesAreAlreadyProcessed, messageBatch.Messages.Count - howManyMessagesAreAlreadyProcessed);
-            }
-
+            
             int i = 0;
             foreach (var message in messageBatch.UnconfirmedMigrationStatus)
             {
@@ -143,6 +136,17 @@ namespace Office365GmailMigratorChecker
                 messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
 
                 messageBatch.Save();
+            }
+             else
+            {
+                //TODO implement a way to disable automatically loading from a cache
+                _logger.LogDebug("Loaded this batch from a previous file. Turn off caching if you didn't want this");
+
+                var howManyMessagesAreAlreadyProcessed = messageBatch.ConfirmedMigrationStatus.Count;
+                if (howManyMessagesAreAlreadyProcessed > 1)
+                {
+                    _logger.LogInformation("Found {0} of these message have already been processed, leaving {1} messages to find information on", howManyMessagesAreAlreadyProcessed, messageBatch.Messages.Count - howManyMessagesAreAlreadyProcessed);
+                }
             }
             return messageBatch;
         }
