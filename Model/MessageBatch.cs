@@ -98,24 +98,19 @@ namespace Office365GmailMigratorChecker.Model
 
         public override string ToString()
         {
-            return ToString(0);
-        }
-
-        string ToString(int numberAlreadyProcessed)
-        {
             int countOfMessagesInBatch = Messages.Count;
 
             //remember messages have three states - either we know it was migrated, we know it wasn't migrated, or we have no idea at all
-            int countOfMessagesWeKnowWhetherMigratedOrNot = ConfirmedMigrationStatus.Count - numberAlreadyProcessed;
+            int countOfMessagesWeKnowWhetherMigratedOrNot = ConfirmedMigrationStatus.Count;
             int countOfMessagesMigrated = MigratedMessages.Count;
 
             //therefore
             int countOfMessagesNotMigrated = countOfMessagesWeKnowWhetherMigratedOrNot - countOfMessagesMigrated;
             int countOfMessagesUnknownIfMigrated = countOfMessagesInBatch - countOfMessagesWeKnowWhetherMigratedOrNot;
 
+            
 
-            return String.Format("Totals: {0} already matched/unmatched, {1} found to match (will include previously matched), {2} confirmed unmatched, {3} unknown)",
-                    numberAlreadyProcessed,
+            return String.Format("Totals: {0} messages found a match in Gmail (will include previously matched during part processing), {1} confirmed unmatched, {2} unknown)",
                     countOfMessagesMigrated,
                     countOfMessagesNotMigrated,
                     countOfMessagesUnknownIfMigrated);
