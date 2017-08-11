@@ -296,3 +296,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 appsettings.json
+/Office365DataStore*.json
