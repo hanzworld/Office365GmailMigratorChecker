@@ -52,12 +52,12 @@ namespace Office365GmailMigratorChecker
 
         }
 
-        public static bool LocalFileExists(MessageBatch batch)
+        public bool LocalFileExists(MessageBatch batch)
         {
             return File.Exists(ConstructFileName(batch));
         }
         
-        private static string ConstructFileName(MessageBatch batch)
+        private string ConstructFileName(MessageBatch batch)
         {
             return String.Format(@"Office365DataStore-{0}-{1}.json", batch.StartDate, batch.EndDate);
         }
