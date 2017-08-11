@@ -62,9 +62,9 @@ namespace Office365GmailMigratorChecker
             while (batchResults.NextPageRequest != null)
             {
                 batchResults = await batchResults.NextPageRequest.GetAsync();
-                Console.WriteLine("{0} : {1}", batchResults[0].SentDateTime, batchResults[0].InternetMessageId);
+                _logger.LogDebug("{0} : {1}", batchResults[0].SentDateTime, batchResults[0].InternetMessageId);
                 messages.AddRange(batchResults);
-                Console.WriteLine("Retrieving new batch from Microsoft, now at {0}", messages.Count);
+                _logger.LogDebug("Retrieving new batch from Microsoft, now at {0}", messages.Count);
             }
             return messages;
         }
@@ -74,7 +74,7 @@ namespace Office365GmailMigratorChecker
             //here are many many duplicates in Outlook, so we need to get rid of them - we'll only take one from each list
             var filteredmessages = messages.DistinctBy(x => x.InternetMessageId).ToList();
             // testing code for what are the duplicates var duplicates = messages.GroupBy(x => x.InternetMessageId).Where(grp => grp.Count() > 1);
-            Console.WriteLine("Ended up with {0} unique messages retrieved", filteredmessages.Count);
+            _logger.LogDebug("Ended up with {0} unique messages retrieved", filteredmessages.Count);
             return filteredmessages;
 
         }

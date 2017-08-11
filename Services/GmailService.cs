@@ -16,7 +16,7 @@ namespace Office365GmailMigratorChecker
         private Gmail _settings;
         private ILogger<GmailService> _logger;
 
-        public GmailService(IOptions<Gmail> settings, ILogger<GmailService> logger) : base(ConstructBaseInitializer()) {
+        public GmailService(IOptions<Gmail> settings, ILogger<GmailService> logger) : base(ConstructBaseInitializer(logger)) {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.Username == null)
             {
@@ -27,7 +27,7 @@ namespace Office365GmailMigratorChecker
         }
 
 
-        private static Initializer ConstructBaseInitializer()
+        private static Initializer ConstructBaseInitializer(ILogger logger)
         {
             UserCredential credential;
             string[] Scopes = { Scope.GmailReadonly };
@@ -43,7 +43,7 @@ namespace Office365GmailMigratorChecker
                     "user",
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
+                logger.LogDebug("Credential file saved to: " + credPath);
             }
 
 

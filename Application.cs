@@ -14,7 +14,7 @@ namespace Office365GmailMigratorChecker
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, LocalPersistanceService localPersistanceService, IOptions<AppSettings> settings, ILogger<Application> logging)
+        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, LocalPersistanceService localPersistanceService, IOptions<AppSettings> settings, ILogger<Application> logger)
         {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.StartYear == 0)
@@ -25,8 +25,9 @@ namespace Office365GmailMigratorChecker
             _gmailService = gmailService;
             _graphService = graphService;
             _dataStoreService = dataStoreService;
+            _localPersistanceService = localPersistanceService;
             _settings = settings.Value;
-            _logging = logging;
+            _logger = logger;
 
         }
 
@@ -34,7 +35,7 @@ namespace Office365GmailMigratorChecker
         private GraphService _graphService;
         private AppSettings _settings;
         private SqlExpressService _dataStoreService;
-        private ILogger<Application> _logging;
+        private ILogger<Application> _logger;
         private LocalPersistanceService _localPersistanceService;
 
         public async Task Run()
@@ -58,7 +59,7 @@ namespace Office365GmailMigratorChecker
 
             try
             {
-                Console.WriteLine($"Looking between {startDate} and {endDate}");
+                _logger.LogInformation($"Looking between {startDate} and {endDate}");
                 // STEP 1: Retrieve a list of messages from Office365 (as the 'original' mail server, it's the source of truth of what should be migrated)
                 messageBatch = await GetOutlookDataAsync(messageBatch);
 
@@ -73,11 +74,11 @@ namespace Office365GmailMigratorChecker
 
                 _localPersistanceService.PersistResultsToFile(messageBatch);
 
-                Console.WriteLine("Complete");
+                _logger.LogInformation("Complete");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"ERROR: {e}");
+                _logger.LogError($"ERROR: {e}");
                 //always save wherever we got to so I don't have to keep rehitting the APIs again
                 _localPersistanceService.PersistResultsToFile(messageBatch);
             }
@@ -91,11 +92,10 @@ namespace Office365GmailMigratorChecker
             var howManyMessagesAreAlreadyProcessed = messageBatch.ConfirmedMigrationStatus.Count;
             if (howManyMessagesAreAlreadyProcessed > 1)
             {
-                Console.WriteLine("{0} of the loaded message were already processed, quering Gmail API for {1} remaining messages", howManyMessagesAreAlreadyProcessed, messageBatch.Messages.Count - howManyMessagesAreAlreadyProcessed);
+                _logger.LogInformation("{0} of the loaded message were already processed, quering Gmail API for {1} remaining messages", howManyMessagesAreAlreadyProcessed, messageBatch.Messages.Count - howManyMessagesAreAlreadyProcessed);
             }
 
             int i = 0;
-            var errors = new List<string>();
             foreach (var message in messageBatch.UnconfirmedMigrationStatus)
             {
                 try
@@ -112,20 +112,20 @@ namespace Office365GmailMigratorChecker
                 }
                 catch (Exception e)
                 {
-                    errors.Add(String.Format("Couldn't retrieve id {0} from Gmail (date: {1}, subject: {2}). Error was {3}", message.OutlookMessage.InternetMessageId, message.OutlookMessage.SentDateTime, message.OutlookMessage.Subject, e.Message));
+                    _logger.LogWarning(String.Format("Couldn't retrieve id {0} from Gmail (date: {1}, subject: {2}). Error was {3}", message.OutlookMessage.InternetMessageId, message.OutlookMessage.SentDateTime, message.OutlookMessage.Subject, e.Message));
                 }
                 finally
                 {
                     i++;
                     if (i % 100 == 0)
                     {
-                        Console.WriteLine("Retriving Gmail information for messages {0}00 and onwards", i / 100);
+                        _logger.LogDebug("Retriving Gmail information for messages {0}00 and onwards", i / 100);
                     }
                 }
 
 
             }
-            Console.WriteLine(messageBatch);
+           _logger.LogInformation(messageBatch.ToString());
             return messageBatch;
         }
 

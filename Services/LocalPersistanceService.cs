@@ -40,7 +40,7 @@ namespace Office365GmailMigratorChecker
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     var messages = (MessageBatch)serializer.Deserialize(file, typeof(MessageBatch));
-                    Console.WriteLine("Read {0} objects from file", messages.Messages.Count);
+                    _logger.LogDebug("Read {0} objects from file", messages.Messages.Count);
                     return messages;
                 }
             }
