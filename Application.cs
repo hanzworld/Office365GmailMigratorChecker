@@ -14,7 +14,7 @@ namespace Office365GmailMigratorChecker
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, LocalPersistanceService localPersistanceService, IOptions<AppSettings> settings, ILogger<Application> logger)
+        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, IOptions<AppSettings> settings, ILogger<Application> logger, MessageBatchFactory batchFactory)
         {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.StartYear == 0)
@@ -25,9 +25,9 @@ namespace Office365GmailMigratorChecker
             _gmailService = gmailService;
             _graphService = graphService;
             _dataStoreService = dataStoreService;
-            _localPersistanceService = localPersistanceService;
             _settings = settings.Value;
             _logger = logger;
+            _messageBatchFactory = batchFactory;
 
         }
 
@@ -36,7 +36,7 @@ namespace Office365GmailMigratorChecker
         private AppSettings _settings;
         private SqlExpressService _dataStoreService;
         private ILogger<Application> _logger;
-        private LocalPersistanceService _localPersistanceService;
+        private MessageBatchFactory _messageBatchFactory;
 
         public async Task Run()
         {
@@ -54,8 +54,8 @@ namespace Office365GmailMigratorChecker
                     endDate = startDate.AddMonths(_settings.Periods);
                     break;
             }
-            
-            var messageBatch = new MessageBatch(startDate, endDate);
+
+            var messageBatch = _messageBatchFactory.SetupBatch(startDate, endDate);
 
             try
             {
@@ -72,7 +72,7 @@ namespace Office365GmailMigratorChecker
                 //STEP 4: Where we have messages we simply can't work out, store them to work on later
                 _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
 
-                _localPersistanceService.PersistResultsToFile(messageBatch);
+                messageBatch.Save();
 
                 _logger.LogInformation("Complete");
             }
@@ -80,7 +80,7 @@ namespace Office365GmailMigratorChecker
             {
                 _logger.LogError($"ERROR: {e}");
                 //always save wherever we got to so I don't have to keep rehitting the APIs again
-                _localPersistanceService.PersistResultsToFile(messageBatch);
+                messageBatch.Save();
             }
         }
 
@@ -131,12 +131,8 @@ namespace Office365GmailMigratorChecker
 
         async Task<MessageBatch> GetOutlookDataAsync(MessageBatch messageBatch)
         {
-            //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
-            if (LocalPersistanceService.LocalFileExists(messageBatch))
-            {
-                messageBatch = _localPersistanceService.ReadResultsFromFile(messageBatch);
-            }
-            else
+            
+            if (!messageBatch.RetrievedFromCache)
             {
                 //get them from the API
                 var outlookData = await _graphService.RetrieveBatch(messageBatch.StartDate, messageBatch.EndDate);
@@ -146,7 +142,7 @@ namespace Office365GmailMigratorChecker
                 //TODO - put this in a proper converter
                 messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
 
-                _localPersistanceService.PersistResultsToFile(messageBatch);
+                messageBatch.Save();
             }
             return messageBatch;
         }

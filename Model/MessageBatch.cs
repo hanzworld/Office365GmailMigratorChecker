@@ -8,24 +8,26 @@ namespace Office365GmailMigratorChecker.Model
 {
     class MessageBatch
     {
+        private LocalPersistanceService _localPersistanceService;
         
-
-        public MessageBatch()
-        {
-        }        
-
-        public MessageBatch(DateTime startDate, DateTime endDate)
+        public MessageBatch(LocalPersistanceService localPersistanceService, DateTime startDate, DateTime endDate)
         {
             EndDate = endDate;
             StartDate = startDate;
+            _localPersistanceService = localPersistanceService;
+            //if we've already got a local copy, load us up straight away
+            LoadFromLocalCacheIfAvailable();
         }
-        
+
         public List<MyMessage> Messages { get; set; }
         [JsonProperty]
         public DateTime StartDate { get; private set; }
         [JsonProperty]
         public DateTime EndDate { get; private set; }
+        [JsonIgnore]
+        public bool RetrievedFromCache { get; private set; }
 
+        #region Helper Linq Methods
         [JsonIgnore]
         public List<MyMessage> ConfirmedMigrationStatus { get {
                 return Messages.Where(m => m.IsMigratedToGmail.HasValue).ToList();
@@ -54,6 +56,27 @@ namespace Office365GmailMigratorChecker.Model
             }
         }
 
+        #endregion
+
+        private void LoadFromLocalCacheIfAvailable()
+        {
+            if (_localPersistanceService.LocalFileExists(this))
+            {
+                this.Messages = _localPersistanceService.ReadResultsFromFile(this).Messages;
+                this.RetrievedFromCache = true;
+            }
+            else
+            {
+                this.RetrievedFromCache = false;
+            }
+            
+        }
+
+        public void Save()
+        {
+            _localPersistanceService.PersistResultsToFile(this);
+
+        }
 
 
         //TODO: Make a better way to cater for reading from file 100 messages, 80 of which are already processed, 20 of which aren't, 
@@ -84,5 +107,20 @@ namespace Office365GmailMigratorChecker.Model
                     countOfMessagesUnknownIfMigrated);
         }
 
+    }
+
+    class MessageBatchFactory
+    {
+        private LocalPersistanceService _localPersistanceService;
+
+        public MessageBatchFactory(LocalPersistanceService localPersistanceService)
+        {
+            _localPersistanceService = localPersistanceService;
+        }
+
+        public MessageBatch SetupBatch(DateTime startDate, DateTime endDate)
+        {
+            return new MessageBatch(_localPersistanceService, startDate, endDate);
+        }
     }
 }
