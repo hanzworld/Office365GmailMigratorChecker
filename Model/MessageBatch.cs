@@ -20,9 +20,9 @@ namespace Office365GmailMigratorChecker.Model
         }
 
         public List<MyMessage> Messages { get; set; }
-        [JsonProperty]
+        [JsonIgnore]
         public DateTime StartDate { get; private set; }
-        [JsonProperty]
+        [JsonIgnore]
         public DateTime EndDate { get; private set; }
         [JsonIgnore]
         public bool RetrievedFromCache { get; private set; }
