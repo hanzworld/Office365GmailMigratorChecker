@@ -14,7 +14,7 @@ namespace Office365GmailMigratorChecker
     class Application
     {
 
-        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, IOptions<AppSettings> settings, ILogger<Application> logging)
+        public Application(GmailService gmailService, GraphService graphService, SqlExpressService dataStoreService, LocalPersistanceService localPersistanceService, IOptions<AppSettings> settings, ILogger<Application> logging)
         {
             //quick sanity check that we loaded something rather than breaking later!
             if (settings.Value.StartYear == 0)
@@ -35,6 +35,7 @@ namespace Office365GmailMigratorChecker
         private AppSettings _settings;
         private SqlExpressService _dataStoreService;
         private ILogger<Application> _logging;
+        private LocalPersistanceService _localPersistanceService;
 
         public async Task Run()
         {
@@ -70,7 +71,7 @@ namespace Office365GmailMigratorChecker
                 //STEP 4: Where we have messages we simply can't work out, store them to work on later
                 _dataStoreService.WriteToDb(messageBatch.UnconfirmedMigrationStatus);
 
-                LocalPersistanceService.PersistResultsToFile(messageBatch);
+                _localPersistanceService.PersistResultsToFile(messageBatch);
 
                 Console.WriteLine("Complete");
             }
@@ -78,7 +79,7 @@ namespace Office365GmailMigratorChecker
             {
                 Console.WriteLine($"ERROR: {e}");
                 //always save wherever we got to so I don't have to keep rehitting the APIs again
-                LocalPersistanceService.PersistResultsToFile(messageBatch);
+                _localPersistanceService.PersistResultsToFile(messageBatch);
             }
         }
 
@@ -133,7 +134,7 @@ namespace Office365GmailMigratorChecker
             //because I'm completely lazy for now, I'm going to store results locally in JSON files - this might bite me later, but at least it'll help me write the app without constant API thrashing
             if (LocalPersistanceService.LocalFileExists(messageBatch))
             {
-                messageBatch = LocalPersistanceService.ReadResultsFromFile(messageBatch);
+                messageBatch = _localPersistanceService.ReadResultsFromFile(messageBatch);
             }
             else
             {
@@ -145,7 +146,7 @@ namespace Office365GmailMigratorChecker
                 //TODO - put this in a proper converter
                 messageBatch.Messages = outlookData.Select(m => new MyMessage { OutlookMessage = m }).ToList();
 
-                LocalPersistanceService.PersistResultsToFile(messageBatch);
+                _localPersistanceService.PersistResultsToFile(messageBatch);
             }
             return messageBatch;
         }

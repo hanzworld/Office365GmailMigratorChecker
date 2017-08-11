@@ -15,7 +15,7 @@ namespace Office365GmailMigratorChecker
             _logger = logger;
         }
 
-        public static void PersistResultsToFile(MessageBatch batch)
+        public void PersistResultsToFile(MessageBatch batch)
         {
             //sanity check we don't have
             if (batch.Messages == null || batch.Messages.Count == 0)
@@ -30,10 +30,11 @@ namespace Office365GmailMigratorChecker
             }
         }
 
-        public static MessageBatch ReadResultsFromFile(MessageBatch batch)
+        public MessageBatch ReadResultsFromFile(MessageBatch batch)
         {
             try
             {
+                //TODO output more useful info liek the filename
                 using (FileStream stream = new FileStream(ConstructFileName(batch), FileMode.Open))
                 using (StreamReader file = new StreamReader(stream))
                 {
