@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Graph" Version="1.4.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.16.0" />
     <PackageReference Include="MoreLinq" Version="2.6.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta5" />
   </ItemGroup>
 
